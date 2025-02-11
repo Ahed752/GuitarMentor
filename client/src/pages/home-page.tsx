@@ -12,6 +12,7 @@ import { VideoLessonCard } from "@/components/video-lesson-card";
 import { CHORDS } from "@/lib/chords";
 import { SAMPLE_LESSONS } from "@/lib/sample-lessons";
 import { useState } from "react";
+import { TunerComponent } from "@/components/tuner";
 
 export default function HomePage() {
   const { user, logoutMutation } = useAuth();
@@ -48,7 +49,7 @@ export default function HomePage() {
   // Add sample lessons if none exist
   useEffect(() => {
     if (videoLessons && videoLessons.length === 0) {
-      SAMPLE_LESSONS.forEach(lesson => {
+      SAMPLE_LESSONS.forEach((lesson) => {
         addLessonMutation.mutate(lesson);
       });
     }
@@ -72,6 +73,7 @@ export default function HomePage() {
         <Tabs defaultValue="chords">
           <TabsList className="mb-8">
             <TabsTrigger value="chords">Chord Library</TabsTrigger>
+            <TabsTrigger value="tuner">Tuner</TabsTrigger>
             <TabsTrigger value="lessons">Video Lessons</TabsTrigger>
             <TabsTrigger value="practice">Practice</TabsTrigger>
             <TabsTrigger value="progress">Progress</TabsTrigger>
@@ -106,6 +108,12 @@ export default function HomePage() {
                   <ChordDiagram chord={selectedChord} />
                 </CardContent>
               </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="tuner">
+            <div className="max-w-xl mx-auto">
+              <TunerComponent />
             </div>
           </TabsContent>
 

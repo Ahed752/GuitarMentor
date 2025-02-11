@@ -19,6 +19,17 @@ export const practiceSessions = pgTable("practice_sessions", {
   notes: text("notes"),
 });
 
+export const videoLessons = pgTable("video_lessons", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description"),
+  videoUrl: text("video_url").notNull(),
+  thumbnailUrl: text("thumbnail_url"),
+  difficulty: text("difficulty").notNull(),
+  category: text("category").notNull(),
+  durationMinutes: integer("duration_minutes").notNull(),
+});
+
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
@@ -29,7 +40,19 @@ export const insertPracticeSessionSchema = createInsertSchema(practiceSessions).
   notes: true,
 });
 
+export const insertVideoLessonSchema = createInsertSchema(videoLessons).pick({
+  title: true,
+  description: true,
+  videoUrl: true,
+  thumbnailUrl: true,
+  difficulty: true,
+  category: true,
+  durationMinutes: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type PracticeSession = typeof practiceSessions.$inferSelect;
 export type InsertPracticeSession = z.infer<typeof insertPracticeSessionSchema>;
+export type VideoLesson = typeof videoLessons.$inferSelect;
+export type InsertVideoLesson = z.infer<typeof insertVideoLessonSchema>;

@@ -3,10 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { PracticeSession } from "@shared/schema";
+import { PracticeSession, VideoLesson } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { ChordDiagram } from "@/components/chord-diagram";
 import { PracticeCard } from "@/components/practice-card";
+import { VideoLessonCard } from "@/components/video-lesson-card";
 import { CHORDS } from "@/lib/chords";
 import { useState } from "react";
 
@@ -16,6 +17,10 @@ export default function HomePage() {
 
   const { data: practiceSessions } = useQuery<PracticeSession[]>({
     queryKey: ["/api/practice"],
+  });
+
+  const { data: videoLessons } = useQuery<VideoLesson[]>({
+    queryKey: ["/api/lessons"],
   });
 
   const practiceMutation = useMutation({
@@ -46,6 +51,7 @@ export default function HomePage() {
         <Tabs defaultValue="chords">
           <TabsList className="mb-8">
             <TabsTrigger value="chords">Chord Library</TabsTrigger>
+            <TabsTrigger value="lessons">Video Lessons</TabsTrigger>
             <TabsTrigger value="practice">Practice</TabsTrigger>
             <TabsTrigger value="progress">Progress</TabsTrigger>
           </TabsList>
@@ -79,6 +85,14 @@ export default function HomePage() {
                   <ChordDiagram chord={selectedChord} />
                 </CardContent>
               </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="lessons">
+            <div className="grid md:grid-cols-3 gap-8">
+              {videoLessons?.map((lesson) => (
+                <VideoLessonCard key={lesson.id} lesson={lesson} />
+              ))}
             </div>
           </TabsContent>
 

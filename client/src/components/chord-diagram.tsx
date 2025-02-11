@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { VolumeIcon } from "lucide-react";
 import { playChord } from "@/lib/audio";
 import type { Chord } from "@/lib/chords";
+import { Badge } from "@/components/ui/badge";
 
 export function ChordDiagram({ chord }: { chord: Chord }) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -54,19 +55,44 @@ export function ChordDiagram({ chord }: { chord: Chord }) {
 
   return (
     <div className="space-y-4">
+      <div className="flex items-center gap-2 mb-4">
+        <Badge variant={
+          chord.difficulty === "beginner" ? "default" :
+          chord.difficulty === "intermediate" ? "secondary" : "destructive"
+        }>
+          {chord.difficulty}
+        </Badge>
+      </div>
+
+      <p className="text-sm text-muted-foreground mb-4">
+        {chord.description}
+      </p>
+
       <svg
         ref={svgRef}
         viewBox="0 0 240 280"
         className="w-full max-w-md mx-auto"
       />
-      <Button
-        className="w-full"
-        onClick={() => playChord(chord)}
-        size="lg"
-      >
-        <VolumeIcon className="w-4 h-4 mr-2" />
-        Play Chord
-      </Button>
+
+      <div className="space-y-4">
+        <Button
+          className="w-full"
+          onClick={() => playChord(chord)}
+          size="lg"
+        >
+          <VolumeIcon className="w-4 h-4 mr-2" />
+          Play Chord
+        </Button>
+
+        <div className="mt-4">
+          <h4 className="font-medium mb-2">Common Uses:</h4>
+          <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+            {chord.commonUses.map((use, index) => (
+              <li key={index}>{use}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
     </div>
   );
 }

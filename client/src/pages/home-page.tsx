@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,6 +10,7 @@ import { ChordDiagram } from "@/components/chord-diagram";
 import { PracticeCard } from "@/components/practice-card";
 import { VideoLessonCard } from "@/components/video-lesson-card";
 import { CHORDS } from "@/lib/chords";
+import { SAMPLE_LESSONS } from "@/lib/sample-lessons";
 import { useState } from "react";
 
 export default function HomePage() {
@@ -32,6 +34,25 @@ export default function HomePage() {
       queryClient.invalidateQueries({ queryKey: ["/api/practice"] });
     },
   });
+
+  const addLessonMutation = useMutation({
+    mutationFn: async (lesson: Omit<VideoLesson, "id">) => {
+      const res = await apiRequest("POST", "/api/lessons", lesson);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/lessons"] });
+    },
+  });
+
+  // Add sample lessons if none exist
+  useEffect(() => {
+    if (videoLessons && videoLessons.length === 0) {
+      SAMPLE_LESSONS.forEach(lesson => {
+        addLessonMutation.mutate(lesson);
+      });
+    }
+  }, [videoLessons]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -90,15 +111,51 @@ export default function HomePage() {
 
           <TabsContent value="lessons">
             <div className="grid md:grid-cols-3 gap-8">
-              {videoLessons?.map((lesson) => (
-                <VideoLessonCard key={lesson.id} lesson={lesson} />
-              ))}
+              {videoLessons?.length === 0 ? (
+                <div className="col-span-3 text-center py-8 text-muted-foreground">
+                  Loading video lessons...
+                </div>
+              ) : (
+                videoLessons?.map((lesson) => (
+                  <VideoLessonCard key={lesson.id} lesson={lesson} />
+                ))
+              )}
             </div>
           </TabsContent>
 
           <TabsContent value="practice">
             <div className="grid md:grid-cols-3 gap-8">
               <PracticeCard onComplete={(data) => practiceMutation.mutate(data)} />
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Practice Tips</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li>• Start with 15-30 minute sessions</li>
+                    <li>• Focus on proper finger placement</li>
+                    <li>• Practice transitions between chords</li>
+                    <li>• Use a metronome for timing</li>
+                    <li>• Take breaks to prevent fatigue</li>
+                  </ul>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Practice Goals</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li>• Master basic chord transitions</li>
+                    <li>• Develop consistent strumming patterns</li>
+                    <li>• Build calluses on fingertips</li>
+                    <li>• Learn one new song per week</li>
+                    <li>• Practice regularly to maintain progress</li>
+                  </ul>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
 
